@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario de Encuesta CRUD</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-main: #0c0814;
+      --bg-card: #140d21;
+      --bg-input: #1a122b;
+      --border-purple: #3b1e5d;
+      --purple-accent: #8b3dff;
+      --cyan-accent: #00f2ca;
+      --text-white: #ffffff;
+      --text-muted: #a29bb0;
+      --btn-green: #00ca73;
+      --btn-blue: #2d68ff;
+      --btn-yellow: #ff9f00;
+      --btn-red: #ff3b30;
+      --btn-gray: #5856d6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-white);
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-purple);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+
+    .header-title {
+      background: linear-gradient(90deg, #7928ca, #8b3dff);
+      color: var(--text-white);
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(139, 61, 255, 0.3);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group.col-span-2 { grid-column: span 2; }
+    .form-group.col-span-4 { grid-column: span 4; }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: var(--text-white);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    label i { color: var(--cyan-accent); }
+
+    input, select, textarea {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-purple);
+      color: var(--text-white);
+      padding: 8px 12px;
+      border-radius: 6px;
+      outline: none;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--purple-accent);
+    }
+
+    .range-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background-color: var(--bg-input);
+      padding: 8px 12px;
+      border: 1px solid var(--border-purple);
+      border-radius: 6px;
+    }
+
+    .range-container input[type="range"] {
+      flex: 1;
+      accent-color: var(--cyan-accent);
+      cursor: pointer;
+    }
+
+    .badge-value {
+      background-color: var(--cyan-accent);
+      color: #000;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn:hover { opacity: 0.9; }
+    .btn:active { transform: scale(0.98); }
+
+    .btn-create { background-color: var(--btn-green); }
+    .btn-search { background-color: var(--btn-blue); }
+    .btn-update { background-color: var(--btn-yellow); color: #000; }
+    .btn-delete { background-color: var(--btn-red); }
+    .btn-clear { background-color: var(--btn-gray); }
+
+    .table-container {
+      overflow-x: auto;
+      border-radius: 6px;
+      border: 1px solid var(--border-purple);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    thead {
+      background-color: #23123d;
+      border-bottom: 2px solid var(--purple-accent);
+    }
+
+    th {
+      padding: 12px;
+      color: var(--cyan-accent);
+      font-weight: bold;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-purple);
+      color: var(--text-white);
+    }
+
+    tbody tr:hover {
+      background-color: var(--bg-input);
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid { grid-template-columns: repeat(2, 1fr); }
+      .form-group.col-span-2, .form-group.col-span-4 { grid-column: span 2; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header-title">
+      <i class="fa-solid fa-clipboard-list"></i> FORMULARIO DE ENCUESTA CRUD
+    </div>
+
+    <form id="crudForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label><i class="fa-solid fa-hashtag"></i> 1. ID Encuesta</label>
+          <input type="text" id="idEncuesta" placeholder="1001" required>
+        </div>
+        <div class="form-group">
+          <label><i class="fa-solid fa-calendar"></i> 2. Fecha</label>
+          <input type="date" id="fecha" required>
+        </div>
+        <div class="form-group">
+          <label><i class="fa-solid fa-user"></i> 3. Nombre Completo</label>
+          <input type="text" id="nombre" placeholder="Nombre completo" required>
+        </div>
+        <div class="form-group">
+          <label><i class="fa-solid fa-envelope"></i> 4. Correo Electrónico</label>
+          <input type="email" id="correo" placeholder="correo@email.com" required>
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-phone"></i> 5. Teléfono</label>
+          <input type="text" id="telefono" placeholder="3124567890">
+        </div>
+        <div class="form-group">
+          <label><i class="fa-solid fa-user-gear"></i> 6. Edad</label>
+          <input type="number" id="edad" placeholder="25">
+        </div>
+        <div class="form-group">
+          <label><i class="fa-solid fa-clock"></i> 7. Hora</label>
+          <input type="time" id="hora">
+        </div>
+        <div class="form-group">
+          <label><i class="fa-solid fa-mars-venus"></i> 8. Género</label>
+          <select id="genero">
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-location-dot"></i> 9. Dirección</label>
+          <input type="text" id="direccion" placeholder="Calle 123">
+        </div>
+        <div class="form-group">
+          <label><i class="fa-solid fa-map-pin"></i> 10. Dirección (Bis)</label>
+          <input type="text" id="direccionBis" placeholder="Apto 201">
+        </div>
+        <div class="form-group">
+          <label><i class="fa-solid fa-building"></i> 11. Ciudad</label>
+          <input type="text" id="ciudad" placeholder="Bogotá">
+        </div>
+        <div class="form-group">
+          <label><i class="fa-solid fa-mail-bulk"></i> 12. Código Postal</label>
+          <input type="text" id="codigoPostal" placeholder="110111">
+        </div>
+
+        <div class="form-group col-span-2">
+          <label><i class="fa-solid fa-globe"></i> 13. ¿Cómo nos conoció?</label>
+          <select id="conocido">
+            <option value="Web">Web</option>
+            <option value="Redes Sociales">Redes Sociales</option>
+            <option value="Recomendación">Recomendación</option>
+          </select>
+        </div>
+        <div class="form-group col-span-2">
+          <label><i class="fa-solid fa-chart-line"></i> 14. Nivel de Satisfacción</label>
+          <div class="range-container">
+            <input type="range" id="satisfaccion" min="0" max="100" value="50" oninput="rangeValue.innerText = this.value">
+            <span class="badge-value" id="rangeValue">50</span>
+          </div>
+        </div>
+
+        <div class="form-group col-span-4">
+          <label><i class="fa-solid fa-comment"></i> 17. Comentarios</label>
+          <textarea id="comentarios" rows="3" placeholder="Escriba aquí sus comentarios..."></textarea>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-create" onclick="crear()"><i class="fa-solid fa-plus"></i> Crear</button>
+        <button type="button" class="btn btn-search" onclick="buscar()"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
+        <button type="button" class="btn btn-update" onclick="actualizar()"><i class="fa-solid fa-pen"></i> Actualizar</button>
+        <button type="button" class="btn btn-delete" onclick="eliminar()"><i class="fa-solid fa-trash"></i> Eliminar</button>
+        <button type="button" class="btn btn-clear" onclick="limpiarFormulario()"><i class="fa-solid fa-broom"></i> Limpiar</button>
+      </div>
+    </form>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Ciudad</th>
+          </tr>
+        </thead>
+        <tbody id="tablaCuerpo">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let registros = [
+      { idEncuesta: "1001", fecha: "2024-05-15", nombre: "Samuel Felipe", correo: "samuel@email.com", ciudad: "Bogotá", telefono: "3124567890", edad: "25", hora: "10:00", genero: "Masculino", direccion: "Calle 10", direccionBis: "", codigoPostal: "110111", conocido: "Web", satisfaccion: "80", comentarios: "Excelente servicio." },
+      { idEncuesta: "1002", fecha: "2024-05-18", nombre: "Sergio Aguirre", correo: "sergio@email.com", ciudad: "Medellín", telefono: "3001234567", edad: "30", hora: "14:30", genero: "Masculino", direccion: "Carrera 45", direccionBis: "", codigoPostal: "050001", conocido: "Redes Sociales", satisfaccion: "90", comentarios: "Muy satisfecho." }
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderTabla();
+      autocompletarUsuarioLogueado();
+    });
+
+    function autocompletarUsuarioLogueado() {
+      const nombreGuardado = localStorage.getItem("usuarioLogueadoNombre");
+      const correoGuardado = localStorage.getItem("usuarioLogueadoCorreo");
+
+      if (nombreGuardado && correoGuardado) {
+        const inputNombre = document.getElementById('nombre');
+        const inputCorreo = document.getElementById('correo');
+
+        inputNombre.value = nombreGuardado;
+        inputCorreo.value = correoGuardado;
+
+        inputNombre.readOnly = true;
+        inputCorreo.readOnly = true;
+      }
+    }
+
+    function obtenerDatos() {
+      return {
+        idEncuesta: document.getElementById('idEncuesta').value.trim(),
+        fecha: document.getElementById('fecha').value,
+        nombre: document.getElementById('nombre').value.trim(),
+        correo: document.getElementById('correo').value.trim(),
+        telefono: document.getElementById('telefono').value.trim(),
+        edad: document.getElementById('edad').value,
+        hora: document.getElementById('hora').value,
+        genero: document.getElementById('genero').value,
+        direccion: document.getElementById('direccion').value.trim(),
+        direccionBis: document.getElementById('direccionBis').value.trim(),
+        ciudad: document.getElementById('ciudad').value.trim(),
+        codigoPostal: document.getElementById('codigoPostal').value.trim(),
+        conocido: document.getElementById('conocido').value,
+        satisfaccion: document.getElementById('satisfaccion').value,
+        comentarios: document.getElementById('comentarios').value.trim()
+      };
+    }
+
+    function renderTabla() {
+      const tbody = document.getElementById('tablaCuerpo');
+      tbody.innerHTML = '';
+      registros.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.onclick = () => seleccionarFila(item.idEncuesta);
+        tr.innerHTML = `
+          <td>${item.idEncuesta}</td>
+          <td>${item.fecha}</td>
+          <td>${item.nombre}</td>
+          <td>${item.correo}</td>
+          <td>${item.ciudad}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function crear() {
+      const datos = obtenerDatos();
+      if (!datos.idEncuesta || !datos.nombre) {
+        alert("Por favor, ingrese al menos el ID y Nombre.");
+        return;
+      }
+      if (registros.some(r => r.idEncuesta === datos.idEncuesta)) {
+        alert("El ID ya existe. Use 'Actualizar' o ingrese un ID nuevo.");
+        return;
+      }
+      registros.push(datos);
+      renderTabla();
+      limpiarFormulario();
+    }
+
+    function buscar() {
+      const id = document.getElementById('idEncuesta').value.trim();
+      const registro = registros.find(r => r.idEncuesta === id);
+      if (registro) {
+        cargarEnFormulario(registro);
+      } else {
+        alert("Registro no encontrado.");
+      }
+    }
+
+    function actualizar() {
+      const datos = obtenerDatos();
+      const index = registros.findIndex(r => r.idEncuesta === datos.idEncuesta);
+      if (index !== -1) {
+        registros[index] = datos;
+        renderTabla();
+        limpiarFormulario();
+      } else {
+        alert("No se encontró un registro con ese ID para actualizar.");
+      }
+    }
+
+    function eliminar() {
+      const id = document.getElementById('idEncuesta').value.trim();
+      const index = registros.findIndex(r => r.idEncuesta === id);
+      if (index !== -1) {
+        registros.splice(index, 1);
+        renderTabla();
+        limpiarFormulario();
+      } else {
+        alert("Ingrese el ID del registro que desea eliminar.");
+      }
+    }
+
+    function seleccionarFila(id) {
+      const registro = registros.find(r => r.idEncuesta === id);
+      if (registro) cargarEnFormulario(registro);
+    }
+
+    function cargarEnFormulario(item) {
+      document.getElementById('idEncuesta').value = item.idEncuesta;
+      document.getElementById('fecha').value = item.fecha;
+      document.getElementById('nombre').value = item.nombre;
+      document.getElementById('correo').value = item.correo;
+      document.getElementById('telefono').value = item.telefono;
+      document.getElementById('edad').value = item.edad;
+      document.getElementById('hora').value = item.hora;
+      document.getElementById('genero').value = item.genero;
+      document.getElementById('direccion').value = item.direccion;
+      document.getElementById('direccionBis').value = item.direccionBis;
+      document.getElementById('ciudad').value = item.ciudad;
+      document.getElementById('codigoPostal').value = item.codigoPostal;
+      document.getElementById('conocido').value = item.conocido;
+      document.getElementById('satisfaccion').value = item.satisfaccion;
+      document.getElementById('rangeValue').innerText = item.satisfaccion;
+      document.getElementById('comentarios').value = item.comentarios;
+    }
+
+    function limpiarFormulario() {
+      document.getElementById('crudForm').reset();
+      document.getElementById('rangeValue').innerText = "50";
+      autocompletarUsuarioLogueado();
+    }
+  </script>
+</body>
+</html>
